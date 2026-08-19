@@ -161,7 +161,7 @@ STATE_MAPPING = {
 
 
 # ============================================================
-# 5. PREPARE STATE NAME FOR MAP
+# 5. PREPARE MAP DATA
 # ============================================================
 
 def prepare_map_data(df):
@@ -206,10 +206,6 @@ def create_india_map(
 
         return
 
-    # --------------------------------------------------------
-    # Hover data
-    # --------------------------------------------------------
-
     hover_data = {}
 
     if hover_columns:
@@ -219,10 +215,6 @@ def create_india_map(
             if column in map_df.columns:
 
                 hover_data[column] = ":,.0f"
-
-    # --------------------------------------------------------
-    # Create map
-    # --------------------------------------------------------
 
     fig = px.choropleth(
 
@@ -243,10 +235,6 @@ def create_india_map(
         hover_data=hover_data
     )
 
-    # --------------------------------------------------------
-    # Map layout
-    # --------------------------------------------------------
-
     fig.update_geos(
         fitbounds="locations",
         visible=False
@@ -265,10 +253,6 @@ def create_india_map(
             b=0
         )
     )
-
-    # --------------------------------------------------------
-    # Display
-    # --------------------------------------------------------
 
     st.plotly_chart(
         fig,
@@ -290,7 +274,6 @@ st.sidebar.write(
 
 st.sidebar.markdown("---")
 
-
 page = st.sidebar.radio(
 
     "Select Analysis",
@@ -305,9 +288,7 @@ page = st.sidebar.radio(
     ]
 )
 
-
 st.sidebar.markdown("---")
-
 
 st.sidebar.info(
     "📊 PhonePe Transaction Insights\n\n"
@@ -317,7 +298,7 @@ st.sidebar.info(
 
 
 # ============================================================
-# HOME PAGE
+# HOME
 # ============================================================
 
 if page == "Home":
@@ -341,10 +322,6 @@ if page == "Home":
     )
 
     st.markdown("---")
-
-    # --------------------------------------------------------
-    # KPI CARDS
-    # --------------------------------------------------------
 
     st.subheader(
         "📊 Project Overview"
@@ -374,10 +351,6 @@ if page == "Home":
 
     st.markdown("---")
 
-    # --------------------------------------------------------
-    # PROJECT OBJECTIVE
-    # --------------------------------------------------------
-
     st.subheader(
         "🎯 Project Objective"
     )
@@ -390,10 +363,6 @@ if page == "Home":
         opportunities and user growth patterns.
         """
     )
-
-    # --------------------------------------------------------
-    # CASES
-    # --------------------------------------------------------
 
     st.subheader(
         "🔍 Business Case Studies"
@@ -473,10 +442,6 @@ elif page == "Case 1 - Transaction Dynamics":
         "💰 Case 1 - Transaction Dynamics"
     )
 
-    # --------------------------------------------------------
-    # SQL
-    # --------------------------------------------------------
-
     query = """
     SELECT *
     FROM aggregated_transaction
@@ -486,14 +451,13 @@ elif page == "Case 1 - Transaction Dynamics":
         query,
         conn
     )
+    df_full_transaction = df.copy()
 
     # --------------------------------------------------------
     # FILTERS
     # --------------------------------------------------------
 
-    st.subheader(
-        "🔎 Filters"
-    )
+    st.subheader("🔎 Filters")
 
     col1, col2 = st.columns(2)
 
@@ -501,11 +465,7 @@ elif page == "Case 1 - Transaction Dynamics":
 
         selected_year = st.selectbox(
             "Select Year",
-
-            sorted(
-                df["Years"].unique()
-            ),
-
+            sorted(df["Years"].unique()),
             key="case1_year"
         )
 
@@ -513,11 +473,7 @@ elif page == "Case 1 - Transaction Dynamics":
 
         selected_quarter = st.selectbox(
             "Select Quarter",
-
-            sorted(
-                df["Quarter"].unique()
-            ),
-
+            sorted(df["Quarter"].unique()),
             key="case1_quarter"
         )
 
@@ -531,13 +487,9 @@ elif page == "Case 1 - Transaction Dynamics":
     # KPI
     # --------------------------------------------------------
 
-    total_amount = (
-        df["Transaction_amount"].sum()
-    )
+    total_amount = df["Transaction_amount"].sum()
 
-    total_transactions = (
-        df["Transaction_count"].sum()
-    )
+    total_transactions = df["Transaction_count"].sum()
 
     average_transaction = (
         total_amount / total_transactions
@@ -545,9 +497,7 @@ elif page == "Case 1 - Transaction Dynamics":
         else 0
     )
 
-    number_states = (
-        df["States"].nunique()
-    )
+    number_states = df["States"].nunique()
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -574,7 +524,7 @@ elif page == "Case 1 - Transaction Dynamics":
     st.markdown("---")
 
     # --------------------------------------------------------
-    # MAP DATA
+    # MAP
     # --------------------------------------------------------
 
     st.subheader(
@@ -588,7 +538,6 @@ elif page == "Case 1 - Transaction Dynamics":
                 "Transaction_amount",
                 "sum"
             ),
-
             Transaction_Count=(
                 "Transaction_count",
                 "sum"
@@ -604,15 +553,10 @@ elif page == "Case 1 - Transaction Dynamics":
     )
 
     create_india_map(
-
         map_data,
-
         "Transaction_Amount",
-
         "PhonePe Transaction Amount by State",
-
         "Reds",
-
         [
             "Transaction_Amount",
             "Transaction_Count",
@@ -621,7 +565,8 @@ elif page == "Case 1 - Transaction Dynamics":
     )
 
     # --------------------------------------------------------
-    # TOP 10 STATES
+
+    # TOP STATES
     # --------------------------------------------------------
 
     st.subheader(
@@ -661,18 +606,11 @@ elif page == "Case 1 - Transaction Dynamics":
         "Top 10 States by Transaction Amount"
     )
 
-    ax1.set_xlabel(
-        "Transaction Amount"
-    )
-
-    ax1.set_ylabel(
-        "State"
-    )
-
     st.pyplot(fig1)
 
     # --------------------------------------------------------
-    # TRANSACTION TYPE
+    
+    # TRANSACTION TYPE PIE
     # --------------------------------------------------------
 
     st.subheader(
@@ -693,14 +631,8 @@ elif page == "Case 1 - Transaction Dynamics":
         )
 
         ax2.pie(
-            transaction_type[
-                "Transaction_amount"
-            ],
-
-            labels=transaction_type[
-                "Transaction_type"
-            ],
-
+            transaction_type["Transaction_amount"],
+            labels=transaction_type["Transaction_type"],
             autopct="%1.1f%%"
         )
 
@@ -709,6 +641,114 @@ elif page == "Case 1 - Transaction Dynamics":
         )
 
         st.pyplot(fig2)
+
+    # ========================================================
+    
+    # YEAR-WISE TRANSACTION AMOUNT
+    # ========================================================
+
+    st.subheader(
+        "📈 Year-wise Transaction Amount"
+    )
+
+    yearly_transaction = (
+        df_full_transaction.groupby("Years")
+        ["Transaction_amount"]
+        .sum()
+        .reset_index()
+    )
+
+    fig3 = px.line(
+        yearly_transaction,
+        x="Years",
+        y="Transaction_amount",
+        markers=True,
+        title="Year-wise Transaction Amount"
+    )
+
+    fig3.update_layout(
+        xaxis_title="Year",
+        yaxis_title="Transaction Amount"
+    )
+
+    st.plotly_chart(
+        fig3,
+        use_container_width=True
+    )
+
+    # ========================================================
+   
+    # TRANSACTION COUNT BY TYPE
+    # ========================================================
+
+    st.subheader(
+        "📊 Transaction Count by Type"
+    )
+
+    transaction_count_type = (
+        df.groupby("Transaction_type")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+    )
+
+    fig4 = px.bar(
+        transaction_count_type,
+        x="Transaction_type",
+        y="Transaction_count",
+        title="Transaction Count by Type"
+    )
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True
+    )
+
+    # ========================================================
+  
+    # AVERAGE TRANSACTION BY STATE
+    # ========================================================
+
+    st.subheader(
+        "💵 Average Transaction Amount by State"
+    )
+
+    avg_state = (
+        df.groupby("States")
+        .agg(
+            Amount=("Transaction_amount", "sum"),
+            Count=("Transaction_count", "sum")
+        )
+        .reset_index()
+    )
+
+    avg_state["Average_Transaction"] = (
+        avg_state["Amount"]
+        /
+        avg_state["Count"]
+    )
+
+    avg_state = avg_state.sort_values(
+        "Average_Transaction",
+        ascending=False
+    ).head(10)
+
+    fig5 = px.bar(
+        avg_state,
+        x="Average_Transaction",
+        y="States",
+        orientation="h",
+        title="Top 10 States by Average Transaction"
+    )
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
 
     # --------------------------------------------------------
     # INSIGHTS
@@ -720,14 +760,9 @@ elif page == "Case 1 - Transaction Dynamics":
         "💡 Business Insights"
     )
 
-    top_state = (
-        transaction_states.iloc[0]["States"]
-    )
+    top_state = transaction_states.iloc[0]["States"]
 
-    top_amount = (
-        transaction_states.iloc[0]
-        ["Total_Amount"]
-    )
+    top_amount = transaction_states.iloc[0]["Total_Amount"]
 
     top_type = (
         transaction_type
@@ -735,8 +770,7 @@ elif page == "Case 1 - Transaction Dynamics":
             "Transaction_amount",
             ascending=False
         )
-        .iloc[0]
-        ["Transaction_type"]
+        .iloc[0]["Transaction_type"]
     )
 
     st.info(
@@ -774,6 +808,9 @@ elif page == "Case 2 - User Engagement":
         conn
     )
 
+    # Keep full dataset for new yearly visual
+    df_full_user = df.copy()
+
     # --------------------------------------------------------
     # FILTERS
     # --------------------------------------------------------
@@ -784,9 +821,7 @@ elif page == "Case 2 - User Engagement":
 
         selected_year = st.selectbox(
             "Select Year",
-            sorted(
-                df["Years"].unique()
-            ),
+            sorted(df["Years"].unique()),
             key="case2_year"
         )
 
@@ -794,9 +829,7 @@ elif page == "Case 2 - User Engagement":
 
         selected_quarter = st.selectbox(
             "Select Quarter",
-            sorted(
-                df["Quarter"].unique()
-            ),
+            sorted(df["Quarter"].unique()),
             key="case2_quarter"
         )
 
@@ -859,20 +892,17 @@ elif page == "Case 2 - User Engagement":
     )
 
     create_india_map(
-
         map_data,
-
         "User_Activity",
-
         "PhonePe User Activity by State",
-
         "Blues",
-
         ["User_Activity"]
     )
 
     # --------------------------------------------------------
-    # DEVICE BRAND
+    
+
+    # BRAND PIE
     # --------------------------------------------------------
 
     st.subheader(
@@ -891,14 +921,8 @@ elif page == "Case 2 - User Engagement":
     )
 
     ax1.pie(
-        brand_users[
-            "Transaction_count"
-        ],
-
-        labels=brand_users[
-            "Brands"
-        ],
-
+        brand_users["Transaction_count"],
+        labels=brand_users["Brands"],
         autopct="%1.1f%%"
     )
 
@@ -909,7 +933,8 @@ elif page == "Case 2 - User Engagement":
     st.pyplot(fig1)
 
     # --------------------------------------------------------
-    # STATES
+  
+    # TOP STATES
     # --------------------------------------------------------
 
     st.subheader(
@@ -951,6 +976,91 @@ elif page == "Case 2 - User Engagement":
 
     st.pyplot(fig2)
 
+    # ========================================================
+   
+    # YEAR-WISE USER ACTIVITY
+    # ========================================================
+
+    st.subheader(
+        "📈 Year-wise User Activity"
+    )
+
+    yearly_user = (
+        df_full_user.groupby("Years")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+    )
+
+    fig3 = px.line(
+        yearly_user,
+        x="Years",
+        y="Transaction_count",
+        markers=True,
+        title="Year-wise User Activity"
+    )
+
+    st.plotly_chart(
+        fig3,
+        use_container_width=True
+    )
+
+    # ========================================================
+   
+    # DEVICE BRAND BAR
+    # ========================================================
+
+    st.subheader(
+        "📊 Device Brand Activity"
+    )
+
+    brand_chart = (
+        df.groupby("Brands")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+    )
+
+    fig4 = px.bar(
+        brand_chart,
+        x="Brands",
+        y="Transaction_count",
+        title="Device Brand Activity"
+    )
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True
+    )
+
+    # ========================================================
+    
+    # TOP BRANDS
+    # ========================================================
+
+    st.subheader(
+        "📱 Top Device Brands"
+    )
+
+    top_brands = brand_chart.head(10)
+
+    fig5 = px.bar(
+        top_brands,
+        x="Transaction_count",
+        y="Brands",
+        orientation="h",
+        title="Top Device Brands by User Activity"
+    )
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
+
     # --------------------------------------------------------
     # INSIGHTS
     # --------------------------------------------------------
@@ -970,9 +1080,7 @@ elif page == "Case 2 - User Engagement":
         .iloc[0]["Brands"]
     )
 
-    top_state = (
-        user_states.iloc[0]["States"]
-    )
+    top_state = user_states.iloc[0]["States"]
 
     st.info(
         f"""
@@ -1007,6 +1115,8 @@ elif page == "Case 3 - Insurance Analysis":
         conn
     )
 
+    df_full_insurance = df.copy()
+
     # --------------------------------------------------------
     # FILTERS
     # --------------------------------------------------------
@@ -1017,9 +1127,7 @@ elif page == "Case 3 - Insurance Analysis":
 
         selected_year = st.selectbox(
             "Select Year",
-            sorted(
-                df["Years"].unique()
-            ),
+            sorted(df["Years"].unique()),
             key="case3_year"
         )
 
@@ -1027,9 +1135,7 @@ elif page == "Case 3 - Insurance Analysis":
 
         selected_quarter = st.selectbox(
             "Select Quarter",
-            sorted(
-                df["Quarter"].unique()
-            ),
+            sorted(df["Quarter"].unique()),
             key="case3_quarter"
         )
 
@@ -1100,19 +1206,15 @@ elif page == "Case 3 - Insurance Analysis":
     )
 
     create_india_map(
-
         map_data,
-
         "Insurance_Amount",
-
         "PhonePe Insurance Amount by State",
-
         "Greens",
-
         ["Insurance_Amount"]
     )
 
     # --------------------------------------------------------
+   
     # TOP STATES
     # --------------------------------------------------------
 
@@ -1150,6 +1252,7 @@ elif page == "Case 3 - Insurance Analysis":
     st.pyplot(fig1)
 
     # --------------------------------------------------------
+
     # INSURANCE TYPE
     # --------------------------------------------------------
 
@@ -1166,9 +1269,8 @@ elif page == "Case 3 - Insurance Analysis":
 
     if (
         not insurance_type.empty
-        and insurance_type[
-            "Insurance_amount"
-        ].sum() > 0
+        and
+        insurance_type["Insurance_amount"].sum() > 0
     ):
 
         fig2, ax2 = plt.subplots(
@@ -1176,14 +1278,8 @@ elif page == "Case 3 - Insurance Analysis":
         )
 
         ax2.pie(
-            insurance_type[
-                "Insurance_amount"
-            ],
-
-            labels=insurance_type[
-                "Insurance_type"
-            ],
-
+            insurance_type["Insurance_amount"],
+            labels=insurance_type["Insurance_type"],
             autopct="%1.1f%%"
         )
 
@@ -1192,6 +1288,109 @@ elif page == "Case 3 - Insurance Analysis":
         )
 
         st.pyplot(fig2)
+
+    # ========================================================
+    
+    # YEAR-WISE INSURANCE
+    # ========================================================
+
+    st.subheader(
+        "📈 Year-wise Insurance Amount"
+    )
+
+    yearly_insurance = (
+        df_full_insurance.groupby("Years")
+        ["Insurance_amount"]
+        .sum()
+        .reset_index()
+    )
+
+    fig3 = px.line(
+        yearly_insurance,
+        x="Years",
+        y="Insurance_amount",
+        markers=True,
+        title="Year-wise Insurance Amount"
+    )
+
+    st.plotly_chart(
+        fig3,
+        use_container_width=True
+    )
+
+    # ========================================================
+    
+    # INSURANCE COUNT BY STATE
+    # ========================================================
+
+    st.subheader(
+        "📊 Insurance Count by State"
+    )
+
+    if "Insurance_count" in df.columns:
+
+        insurance_count_state = (
+            df.groupby("States")
+            ["Insurance_count"]
+            .sum()
+            .reset_index()
+            .sort_values(
+                "Insurance_count",
+                ascending=False
+            )
+            .head(10)
+        )
+
+        fig4 = px.bar(
+            insurance_count_state,
+            x="Insurance_count",
+            y="States",
+            orientation="h",
+            title="Top 10 States by Insurance Count"
+        )
+
+        st.plotly_chart(
+            fig4,
+            use_container_width=True
+        )
+
+    else:
+
+        st.info(
+            "Insurance_count column is not available."
+        )
+
+    # ========================================================
+    
+    # INSURANCE TYPE COMPARISON
+    # ========================================================
+
+    st.subheader(
+        "🛡️ Insurance Type Comparison"
+    )
+
+    insurance_type_chart = (
+        df.groupby("Insurance_type")
+        ["Insurance_amount"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Insurance_amount",
+            ascending=False
+        )
+    )
+
+    fig5 = px.bar(
+        insurance_type_chart,
+        x="Insurance_type",
+        y="Insurance_amount",
+        title="Insurance Amount by Insurance Type"
+    )
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
 
     # --------------------------------------------------------
     # INSIGHTS
@@ -1205,14 +1404,9 @@ elif page == "Case 3 - Insurance Analysis":
 
     if not insurance_states.empty:
 
-        top_state = (
-            insurance_states.iloc[0]["States"]
-        )
+        top_state = insurance_states.iloc[0]["States"]
 
-        top_amount = (
-            insurance_states.iloc[0]
-            ["Insurance_amount"]
-        )
+        top_amount = insurance_states.iloc[0]["Insurance_amount"]
 
         st.info(
             f"""
@@ -1248,6 +1442,8 @@ elif page == "Case 4 - Market Expansion":
         conn
     )
 
+    df_full_market = df.copy()
+
     # --------------------------------------------------------
     # FILTERS
     # --------------------------------------------------------
@@ -1258,9 +1454,7 @@ elif page == "Case 4 - Market Expansion":
 
         selected_year = st.selectbox(
             "Select Year",
-            sorted(
-                df["Years"].unique()
-            ),
+            sorted(df["Years"].unique()),
             key="case4_year"
         )
 
@@ -1268,9 +1462,7 @@ elif page == "Case 4 - Market Expansion":
 
         selected_quarter = st.selectbox(
             "Select Quarter",
-            sorted(
-                df["Quarter"].unique()
-            ),
+            sorted(df["Quarter"].unique()),
             key="case4_quarter"
         )
 
@@ -1335,7 +1527,6 @@ elif page == "Case 4 - Market Expansion":
                 "Transaction_amount",
                 "sum"
             ),
-
             Transaction_Count=(
                 "Transaction_count",
                 "sum"
@@ -1345,15 +1536,10 @@ elif page == "Case 4 - Market Expansion":
     )
 
     create_india_map(
-
         map_data,
-
         "Transaction_Amount",
-
         "PhonePe Market Activity by State",
-
         "Oranges",
-
         [
             "Transaction_Amount",
             "Transaction_Count"
@@ -1361,7 +1547,8 @@ elif page == "Case 4 - Market Expansion":
     )
 
     # --------------------------------------------------------
-    # TOP STATES
+    
+    # STATES
     # --------------------------------------------------------
 
     st.subheader(
@@ -1398,7 +1585,8 @@ elif page == "Case 4 - Market Expansion":
     st.pyplot(fig1)
 
     # --------------------------------------------------------
-    # TOP DISTRICTS
+   
+    # DISTRICTS
     # --------------------------------------------------------
 
     st.subheader(
@@ -1434,6 +1622,103 @@ elif page == "Case 4 - Market Expansion":
 
     st.pyplot(fig2)
 
+    # ========================================================
+   
+    # YEAR-WISE TRANSACTION
+    # ========================================================
+
+    st.subheader(
+        "📈 Year-wise Market Transaction Amount"
+    )
+
+    yearly_market = (
+        df_full_market.groupby("Years")
+        ["Transaction_amount"]
+        .sum()
+        .reset_index()
+    )
+
+    fig3 = px.line(
+        yearly_market,
+        x="Years",
+        y="Transaction_amount",
+        markers=True,
+        title="Year-wise Market Transaction Amount"
+    )
+
+    st.plotly_chart(
+        fig3,
+        use_container_width=True
+    )
+
+    # ========================================================
+    
+    # TRANSACTION COUNT BY STATE
+    # ========================================================
+
+    st.subheader(
+        "📊 Transaction Count by State"
+    )
+
+    state_count = (
+        df.groupby("States")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+        .head(10)
+    )
+
+    fig4 = px.bar(
+        state_count,
+        x="Transaction_count",
+        y="States",
+        orientation="h",
+        title="Top 10 States by Transaction Count"
+    )
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True
+    )
+
+    # ========================================================
+   
+    # DISTRICT TRANSACTION COUNT
+    # ========================================================
+
+    st.subheader(
+        "🏙️ District Transaction Count"
+    )
+
+    district_count = (
+        df.groupby("District")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+        .head(10)
+    )
+
+    fig5 = px.bar(
+        district_count,
+        x="Transaction_count",
+        y="District",
+        orientation="h",
+        title="Top 10 Districts by Transaction Count"
+    )
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
+
     # --------------------------------------------------------
     # INSIGHTS
     # --------------------------------------------------------
@@ -1444,13 +1729,9 @@ elif page == "Case 4 - Market Expansion":
         "💡 Business Insights"
     )
 
-    top_state = (
-        market_states.iloc[0]["States"]
-    )
+    top_state = market_states.iloc[0]["States"]
 
-    top_district = (
-        market_districts.iloc[0]["District"]
-    )
+    top_district = market_districts.iloc[0]["District"]
 
     st.info(
         f"""
@@ -1486,6 +1767,8 @@ elif page == "Case 5 - User Growth":
         conn
     )
 
+    df_full_growth = df.copy()
+
     # --------------------------------------------------------
     # FILTERS
     # --------------------------------------------------------
@@ -1496,9 +1779,7 @@ elif page == "Case 5 - User Growth":
 
         selected_year = st.selectbox(
             "Select Year",
-            sorted(
-                df["Years"].unique()
-            ),
+            sorted(df["Years"].unique()),
             key="case5_year"
         )
 
@@ -1506,9 +1787,7 @@ elif page == "Case 5 - User Growth":
 
         selected_quarter = st.selectbox(
             "Select Quarter",
-            sorted(
-                df["Quarter"].unique()
-            ),
+            sorted(df["Quarter"].unique()),
             key="case5_quarter"
         )
 
@@ -1571,19 +1850,15 @@ elif page == "Case 5 - User Growth":
     )
 
     create_india_map(
-
         map_data,
-
         "User_Activity",
-
         "PhonePe User Activity by State",
-
         "Purples",
-
         ["User_Activity"]
     )
 
     # --------------------------------------------------------
+   
     # YEARLY GROWTH
     # --------------------------------------------------------
 
@@ -1592,7 +1867,7 @@ elif page == "Case 5 - User Growth":
     )
 
     yearly_users = (
-        df.groupby("Years")
+        df_full_growth.groupby("Years")
         ["Transaction_count"]
         .sum()
         .reset_index()
@@ -1602,9 +1877,7 @@ elif page == "Case 5 - User Growth":
                 "Total_Users"
             }
         )
-        .sort_values(
-            "Years"
-        )
+        .sort_values("Years")
     )
 
     fig1, ax1 = plt.subplots(
@@ -1621,9 +1894,7 @@ elif page == "Case 5 - User Growth":
         "Year-wise User Growth"
     )
 
-    ax1.set_xlabel(
-        "Year"
-    )
+    ax1.set_xlabel("Year")
 
     ax1.set_ylabel(
         "User Activity"
@@ -1634,6 +1905,7 @@ elif page == "Case 5 - User Growth":
     st.pyplot(fig1)
 
     # --------------------------------------------------------
+   
     # QUARTERLY GROWTH
     # --------------------------------------------------------
 
@@ -1642,7 +1914,7 @@ elif page == "Case 5 - User Growth":
     )
 
     quarterly_users = (
-        df.groupby(
+        df_full_growth.groupby(
             ["Years", "Quarter"]
         )
         ["Transaction_count"]
@@ -1660,13 +1932,9 @@ elif page == "Case 5 - User Growth":
     )
 
     quarterly_users["Period"] = (
-        quarterly_users["Years"]
-        .astype(str)
-        +
-        "-Q"
-        +
-        quarterly_users["Quarter"]
-        .astype(str)
+        quarterly_users["Years"].astype(str)
+        + "-Q"
+        + quarterly_users["Quarter"].astype(str)
     )
 
     fig2, ax2 = plt.subplots(
@@ -1683,21 +1951,18 @@ elif page == "Case 5 - User Growth":
         "Quarter-wise User Growth"
     )
 
-    ax2.set_xlabel(
-        "Quarter"
-    )
+    ax2.set_xlabel("Quarter")
 
     ax2.set_ylabel(
         "User Activity"
     )
 
-    plt.xticks(
-        rotation=45
-    )
+    plt.xticks(rotation=45)
 
     st.pyplot(fig2)
 
     # --------------------------------------------------------
+    
     # TOP STATES
     # --------------------------------------------------------
 
@@ -1739,6 +2004,106 @@ elif page == "Case 5 - User Growth":
     )
 
     st.pyplot(fig3)
+
+    # ========================================================
+    
+    # USER ACTIVITY BY BRAND
+    # ========================================================
+
+    st.subheader(
+        "📱 User Activity by Device Brand"
+    )
+
+    brand_activity = (
+        df.groupby("Brands")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+    )
+
+    fig4 = px.bar(
+        brand_activity,
+        x="Brands",
+        y="Transaction_count",
+        title="User Activity by Device Brand"
+    )
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True
+    )
+
+    # ========================================================
+    
+    # YEAR-OVER-YEAR GROWTH
+    # ========================================================
+
+    st.subheader(
+        "📈 Year-over-Year User Growth"
+    )
+
+    yoy = yearly_users.copy()
+
+    yoy["Growth_Percentage"] = (
+        yoy["Total_Users"]
+        .pct_change()
+        .fillna(0)
+        * 100
+    )
+
+    fig5 = px.bar(
+        yoy,
+        x="Years",
+        y="Growth_Percentage",
+        title="Year-over-Year User Growth (%)"
+    )
+
+    fig5.update_layout(
+        yaxis_title="Growth (%)"
+    )
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
+
+    # ========================================================
+    
+    # STATE USER COMPARISON
+    # ========================================================
+
+    st.subheader(
+        "🗺️ State User Activity Comparison"
+    )
+
+    state_comparison = (
+        df.groupby("States")
+        ["Transaction_count"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Transaction_count",
+            ascending=False
+        )
+        .head(10)
+    )
+
+    fig6 = px.bar(
+        state_comparison,
+        x="Transaction_count",
+        y="States",
+        orientation="h",
+        title="Top 10 States by User Activity"
+    )
+
+    st.plotly_chart(
+        fig6,
+        use_container_width=True
+    )
 
     # --------------------------------------------------------
     # INSIGHTS
